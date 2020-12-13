@@ -145,6 +145,7 @@ public:
     void setDateTime(RTC_Date date);
     RTC_Date getDateTime();
     RTC_Alarm getAlarm();
+	bool isAlarmEnabled();
     void enableAlarm();
     void disableAlarm();
     bool alarmActive();
