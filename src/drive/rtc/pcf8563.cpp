@@ -136,9 +136,16 @@ RTC_Alarm PCF8563_Class::getAlarm()
 
 bool PCF8563_Class::isAlarmEnabled()
 {
-    _readByte(PCF8563_STAT2_REG, 1, _data);
-    _data[0] = _data[0] & PCF8563_ALARM_AIE;   
-    return _data[0] != 0;
+    //_readByte(PCF8563_STAT2_REG, 1, _data);
+    //_data[0] = _data[0] & PCF8563_ALARM_AIE;   
+    //return _data[0] != 0;
+	
+	_readByte(PCF8563_ALRM_MIN_REG, 4, _data);
+    return 
+		(((~_data[0]) & PCF8563_ALARM_ENABLE) != 0) || 
+		(((~_data[1]) & PCF8563_ALARM_ENABLE) != 0) ||
+		(((~_data[2]) & PCF8563_ALARM_ENABLE) != 0) ||
+		(((~_data[3]) & PCF8563_ALARM_ENABLE) != 0);
 }
 
 
@@ -174,7 +181,7 @@ bool PCF8563_Class::alarmActive()
 
 void PCF8563_Class::setAlarm(RTC_Alarm alarm)
 {
-    setAlarm(alarm.minute, alarm.hour, alarm.day, alarm.weekday);
+    setAlarm(alarm.minute, alarm.hour, alarm.day, alarm.weekday, true);
 }
 
 void PCF8563_Class::setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday)
@@ -201,6 +208,36 @@ void PCF8563_Class::setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t 
     if (weekday != PCF8563_NO_ALARM) {
         _data[3] = _dec_to_bcd(constrain(weekday, 0, 6));
         _data[3] &= ~PCF8563_ALARM_ENABLE;
+    } else {
+        _data[3] = PCF8563_ALARM_ENABLE;
+    }
+    _writeByte(PCF8563_ALRM_MIN_REG, 4, _data);
+}
+
+void PCF8563_Class::setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday, bool ON)
+{
+    if (minute != PCF8563_NO_ALARM) {
+        _data[0] = PCF8563_ALARM_ENABLE | _dec_to_bcd(constrain(minute, 0, 59));
+        if(ON) _data[0] &= ~PCF8563_ALARM_ENABLE;		
+    } else {
+        _data[0] = PCF8563_ALARM_ENABLE;
+    }
+
+    if (hour != PCF8563_NO_ALARM) {
+        _data[1] = PCF8563_ALARM_ENABLE | _dec_to_bcd(constrain(hour, 0, 23));
+        if(ON) _data[1] &= ~PCF8563_ALARM_ENABLE;		
+    } else {
+        _data[1] = PCF8563_ALARM_ENABLE;
+    }
+    if (day != PCF8563_NO_ALARM) {
+        _data[2] = PCF8563_ALARM_ENABLE | _dec_to_bcd(constrain(day, 1, 31));
+        if(ON) _data[2] &= ~PCF8563_ALARM_ENABLE;
+    } else {
+        _data[2] = PCF8563_ALARM_ENABLE;
+    }
+    if (weekday != PCF8563_NO_ALARM) {
+        _data[3] = PCF8563_ALARM_ENABLE | _dec_to_bcd(constrain(weekday, 0, 6));
+        if(ON) _data[3] &= ~PCF8563_ALARM_ENABLE;
     } else {
         _data[3] = PCF8563_ALARM_ENABLE;
     }

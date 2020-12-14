@@ -151,7 +151,8 @@ public:
     bool alarmActive();
     void resetAlarm();
     void setAlarm(RTC_Alarm alarm);
-    void setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
+	void setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
+    void setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday, bool ON);
     bool isValid();
 
     void setAlarmByWeekDay(uint8_t weekday);
