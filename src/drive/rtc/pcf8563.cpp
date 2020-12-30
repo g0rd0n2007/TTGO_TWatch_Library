@@ -415,7 +415,25 @@ RTC_Date::RTC_Date(uint16_t y,
 
 }
 
-
+RTC_Date RTC_Date::SubDays(int d){
+	int DaysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	
+	int D = day - d, M = month, Y = year;
+	while(D < 1) {
+		M--;
+		if(M<1){
+			M = 12;
+			Y--;
+		}
+		
+		if (((Y % 4 == 0) && (Y % 100 != 0)) || (Y % 400 == 0)) DaysInMonth[1] = 29;
+		else DaysInMonth[1] = 28;
+		
+		D += DaysInMonth[M - 1];
+	}
+	
+	return RTC_Date((uint16_t)Y, (uint8_t)M, (uint8_t)D, hour, minute, second);
+}
 
 uint8_t RTC_Date::StringToUint8(const char *pString)
 {

@@ -100,6 +100,7 @@ public:
              uint8_t minute,
              uint8_t second
             );
+	RTC_Date SubDays(int d);
     uint16_t year;
     uint8_t month;
     uint8_t day;
